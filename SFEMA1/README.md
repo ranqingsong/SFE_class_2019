@@ -1,6 +1,6 @@
 [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/banner.png" width="888" alt="Visit QuantNet">](http://quantlet.de/)
 
-## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **SFElikma1** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
+## [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/qloqo.png" alt="Visit QuantNet">](http://quantlet.de/) **SFEMA1** [<img src="https://github.com/QuantLet/Styleguide-and-FAQ/blob/master/pictures/QN2.png" width="60" alt="Visit QuantNet 2.0">](http://quantlet.de/)
 
 ```yaml
 
@@ -61,6 +61,7 @@ title(paste("MA(1) Process, n =", n2))
 
 ```
 ![Picture1](likelima1_100.png)
+### R Code
 ```r
 # clear variables and close windows
 rm(list = ls(all = TRUE))
@@ -112,7 +113,8 @@ points(output[, c(1,3)], type = "l", col = 2, lty = 2, lwd = 2)
 abline(v = output[which.max(cli),1], col = "red")
 
 ```
-![Picture1](likelima1_100o.png)
+![Picture1](likelima1_1000.png)
+### R Code
 ```r
 # clear variables and close windows
 rm(list = ls(all = TRUE))
