@@ -1,4 +1,4 @@
-Name of QuantLet: SFEMA1_plotma1
+Name of QuantLet: SFEMA1_likelima1_100
 
 Published in: Statistics of Financial Markets
 
