@@ -165,12 +165,12 @@ def sample_and_plot(S0, K, B, T, N, u, d, q, M, barrier_type):
     for path in p_invalid:
         ax1.plot(times, path, c='lightcoral')
     for path in p_valid:
-        ax1.plot(times, path, c='lightgreen')
+        ax1.plot(times, path, c='grey')
     for path in p_counts:
         ax1.plot(times, path, c='blue')
     
     custom_lines = [Line2D([0], [0], c='lightcoral', lw=2),
-                    Line2D([0], [0], c='lightgreen', lw=2),
+                    Line2D([0], [0], c='grey', lw=2),
                     Line2D([0], [0], c='blue', lw=2), 
                     Line2D([0], [0], c='red', ls=':', lw=2), 
                     Line2D([0], [0], c='navy', ls=':', lw=2)]
@@ -181,7 +181,65 @@ def sample_and_plot(S0, K, B, T, N, u, d, q, M, barrier_type):
     plt.yscale('log') 
     ax1.legend(custom_lines, ['invalid (barrier)', 'invalid (option)', 'valid', 
                               'barrier', 'strike price'])
-    # plt.savefig('up-and-out_call.png', transparent=True)
+    #plt.savefig('up-and-out_call.png', transparent=True)
+    plt.show()
+
+def variations_plot(S0, K, B, T, N, u, d, q, M, barrier_type, option, 
+                    MC_runs, price_tree):
+    """
+    Creates a plot which shows the statistical nature of the Monte Carlo Method.
+    Less variation in outcomes with higher sample size.
+    input:
+      S0, T, N, u, d, q : parameters of the Binomial Tree (CRR) Model
+                          as in function calc_parameters   
+      B            : Barrier 
+      M            : amount of sample paths, is scaled up later 
+                     (recommend around 10000)
+      barrier_type : 'up-and-out', 'down-and-out', 'up-and-in', 'down-and-in'
+      option, K    : 'Call' or 'Put' option with strike price K
+      MC_runs      : maximum factor for paths Mi = i*M for i in range(0,MC_runs)
+      price_tree   : option price as calculated with a Binomial Tree 
+                     (SFEBarrier_Pricing_Tree)
+    """
+    x_values = []
+    pi_M = []
+    pi_M_RMSE = []
+    for i in range(1,MC_runs,1):
+        Mi=M*i
+        x_values.append([Mi])
+        paths = sample_paths(S0, N, u, d, q, Mi)
+        p_valid, p_invalid, p_counts = split_paths(paths, B, K, 
+                                                   barrier_type, option)
+        if option == 'Call':
+            payoffs = np.maximum(0,p_counts[:,-1]-K)*np.exp(-1*r*T)
+        elif option == 'Put':
+            payoffs = np.maximum(0,K-p_counts[:,-1])*np.exp(-1*r*T)
+        payoffs = list(payoffs)
+        while len(payoffs) < Mi:
+            payoffs.append([0])
+        mean_payoff = np.mean(payoffs)[0]
+        pi_M.append(mean_payoff)
+        RMSE = np.sqrt(np.var(payoffs,ddof=1))/np.sqrt(Mi)
+        pi_M_RMSE.append(RMSE[0])
+    
+    # plotting
+    plt.figure(figsize=(8,6))
+    plt.subplot(2, 1, 1)
+    plt.plot(x_values, price_tree-1.96*np.array(pi_M_RMSE), '--', c='grey')
+    plt.plot(x_values, price_tree+1.96*np.array(pi_M_RMSE), '--', c='grey')
+    plt.plot(x_values, pi_M, 'o', label='price via MC')
+    plt.plot(x_values, [price_tree]*len(x_values), '-', lw=3, 
+             label='price via tree')
+    plt.legend()
+    plt.title('Monte Carlo price, for increasing number of paths')
+    plt.ylabel('Expected Value')
+    #The following will plot the root mean square error
+    plt.subplot(2, 1, 2)
+    plt.plot(x_values, pi_M_RMSE, '-')
+    plt.xlabel('number of paths')
+    plt.ylabel('Root Mean Square Error')
+    #plt.savefig('MonteCarlo_variation.png', transparent=True)
+    plt.show()     
     
 ####### MAIN ################
 
@@ -208,9 +266,17 @@ for option in ['Call', 'Put']:
         price = calc_price(p_counts, K, r, T, M, option)
         print(barrier_type, price)
 
-# plot_paths
+# plot sample paths
 M = 200
 option = 'Call'
 barrier_type = 'up-and-out'
 
 sample_and_plot(S0, K, B, T, N, u, d, q, M, barrier_type)
+
+# plot Monte Carlo variations
+M = 10000     # 
+MC_runs = 50  # runs for 10.000, 20.000, ... 500.000 paths
+price_tree = 1.9017790840893305  # Value from SFEBarrier_Pricing_Tree
+
+variations_plot(S0, K, B, T, N, u, d, q, M, 
+                barrier_type, option, MC_runs, price_tree)
