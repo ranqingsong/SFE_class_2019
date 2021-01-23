@@ -1,4 +1,4 @@
-Name of QuantLet: SFEplotma1-newdata
+Name of QuantLet: SFEMA1
 
 Published in: Statistics of Financial Markets
 
@@ -8,7 +8,7 @@ Keywords: moving-average, stationary, linear, discrete, simulation, time-series,
 
 Author: Ranqing Song
 
-Submitted: January 24 2020 by Ranqing Song
+Submitted: January 29 2020 by Ranqing Song
 
 Input: 
 - n1, n2 : lags
